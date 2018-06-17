@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 public class SLListAddTester {
     @Test
     public void test0(){
-        pset1.SLList l = new pset1.SLList();
+        SLList l = new SLList();
         assertTrue(l.repOk());
         l.add(true);
 
@@ -18,7 +18,7 @@ public class SLListAddTester {
     }
 
     @Test public void test1(){
-        pset1.SLList l = new pset1.SLList();
+        SLList l = new SLList();
         assertTrue(l.repOk());
         l.add(true);
         assertTrue(l.repOk());
