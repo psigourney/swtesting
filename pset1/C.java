@@ -10,12 +10,13 @@ public class C{
     @Override
     public boolean equals(Object o){
         //Assume this is implemented for you
-        return true;
+        if (!(o instanceof C)) return false;
+        return this.f == ((C) o).f;
     }
 
     @Override
     public int hashCode(){
         //Assume this is implemented for you
-        return 0;
+        return f;
     }
 }

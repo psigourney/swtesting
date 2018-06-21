@@ -12,12 +12,13 @@ public class D extends C{
     @Override
     public boolean equals(Object o){
         //Assume this is implemented for you
-        return true;
+        if (!(o instanceof D)) return false;
+        return (this.f == ((D) o).f && this.g == ((D) o).g);
     }
 
     @Override
     public int hashCode(){
         //Assume this is implemented for you
-        return 0;
+        return f*g;
     }
 }
