@@ -9,9 +9,7 @@ public class Graph {
 
     public Graph(int size){
         numNodes = size;
-
-
-        //Your code goes here
+        edges = new boolean[size][size];
     }
 
     public String toString(){
@@ -24,9 +22,7 @@ public class Graph {
     }
 
     public void addEdge(int from, int to){
-        //postcondition: adds a directed edge "from" -> "to" to this graph
-
-        //Your code goes here
+        edges[from][to] = true;
     }
 
     public boolean reachable(Set<Integer> sources, Set<Integer> targets){
@@ -39,6 +35,7 @@ public class Graph {
         //      that there is a directed path that starts at "n" in "this"; and false otherwise.
 
 
-        //Your code goes here
+        //Your code goes here (1.3)
+        return true;
     }
 }
