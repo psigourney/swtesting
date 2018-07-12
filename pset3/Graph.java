@@ -1,5 +1,4 @@
 package pset3;
-
 import java.util.*;
 
 public class Graph {
@@ -7,6 +6,7 @@ public class Graph {
     private boolean[][] edges;
 
     public Graph(int size){
+        if(size < 0) size = 0;
         numNodes = size;
         edges = new boolean[size][size];
     }
@@ -21,17 +21,13 @@ public class Graph {
     }
 
     public void addEdge(int from, int to){
-        edges[from][to] = true;
+        if(from >= 0 && from < numNodes && to >= 0 && to < numNodes ) {
+            edges[from][to] = true;
+        }
     }
 
     public boolean reachable(Set<Integer> sources, Set<Integer> targets) {
         if (sources == null || targets == null) throw new IllegalArgumentException();
-
-        //postcondition: returns true if
-        //      1) "sources" does not contain an illegal node
-        //      2) "targets" dies not contain an illegal node
-        //      3) for each node 'm' in set "targets", there is some node 'n' in set "sources" such
-        //      that there is a directed path that starts at "n" in "this"; and false otherwise.
 
         for( Integer targetNode : targets ){
             if(targetNode < 0 || targetNode >= numNodes) return false;
@@ -39,10 +35,9 @@ public class Graph {
 
             for( Integer sourceNode : sources ){
                 if(sourceNode < 0 || sourceNode >= numNodes) return false;
-                //System.out.println("Checking isReachable(" + sourceNode + ", " + targetNode + ")");
                 if(isReachable(sourceNode, targetNode)) {
-                    //System.out.println("True: isReachable(" + sourceNode + ", " + targetNode + ")");
                     targetFound = true;
+                    break;  //If we find a path, move to next target
                 }
             }
             if(!targetFound) return false; //One of the targets can't be reached
@@ -50,7 +45,8 @@ public class Graph {
         return true;
     }
 
-    //isReachable Code Copied from: https://www.geeksforgeeks.org/find-if-there-is-a-path-between-two-vertices-in-a-given-graph/
+    // isReachable Code Copied from:
+    // https://www.geeksforgeeks.org/find-if-there-is-a-path-between-two-vertices-in-a-given-graph/
     public boolean isReachable(int s, int d)
     {
         if(s==d) return true;
@@ -84,13 +80,11 @@ public class Graph {
             i = adjList.listIterator();
 
             // Get all adjacent vertices of the dequeued vertex s
-            // If a adjacent has not been visited, then mark it
-            // visited and enqueue it
+            // If a adjacent has not been visited, then mark it visited and enqueue it
             while (i.hasNext()){
                 n = i.next();
 
-                // If this adjacent node is the destination node,
-                // then return true
+                // If this adjacent node is the destination node, then return true
                 if (n==d) return true;
 
                 // Else, continue to do BFS
@@ -103,6 +97,4 @@ public class Graph {
         // If BFS is complete without visited d
         return false;
     }
-
-
 }
