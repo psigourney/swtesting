@@ -37,7 +37,7 @@ public class CFG {
         }
 
         public String toString(){
-            return clazz.getClassName() + ',' + method.getName() + method.getSignature() + ": " + position;
+            return clazz.getClassName() + '.' + method.getName() + method.getSignature() + ": " + position;
         }
     }
 
