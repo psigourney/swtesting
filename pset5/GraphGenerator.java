@@ -5,6 +5,10 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.*;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 public class GraphGenerator {
     public CFG createCFG(String className) throws ClassNotFoundException{
         CFG cfg = new CFG();
@@ -20,23 +24,44 @@ public class GraphGenerator {
             MethodGen mg = new MethodGen(m, cg.getClassName(), cpg);
             InstructionList il = mg.getInstructionList();
             InstructionHandle[] handles = il.getInstructionHandles();
+
+            //Create dummy exit node
+            int finalInstrPos = (handles[handles.length-1].getPosition());
+            int exitNodePos = (handles[handles.length-1].getPosition())+1;
+            cfg.addNode(exitNodePos, m, jc);
+
+            int prevNodePos = -1;
             for(InstructionHandle ih : handles){
                 int position = ih.getPosition();
-                System.out.println("adding Node: " + position + "; " + m );
                 cfg.addNode(position, m, jc);
                 Instruction inst = ih.getInstruction();
+
+                //If instruction is a conditional:
                 if(inst instanceof BranchInstruction){
                     BranchInstruction brInst = (BranchInstruction) ih.getInstruction();
-                    System.out.println("branchInstr: " + brInst);
-                    System.out.println("instr target: " + brInst.getTarget());
+                    cfg.addEdge(position, brInst.getTarget().getPosition(), m, jc);
                 }
-                System.out.println("instruction: " + inst + "\n");
-
-                //TODO: Your code goes here to add edges
+                //If instruction is an exit point, create edge to exit node
+                if(inst.getName() == "ireturn"){
+                    cfg.addEdge(position, exitNodePos, m, jc);
+                }
+                //If instruction is last instruction in list, create edge to exit node
+                if(position == finalInstrPos){
+                    cfg.addEdge(position, exitNodePos, m, jc);
+                }
+                //If previous instruction should have an edge to current instruction
+                if(prevNodePos != -1){
+                    cfg.addEdge(prevNodePos, position, m, jc);
+                }
+                //If current instruction is a return, the next instruction won't have an edge from it
+                if(inst.getName() == "ireturn"){
+                    prevNodePos = -1;
+                } else { prevNodePos = position; }
             }
         }
         return cfg;
     }
+
     public CFG createCFGWithMethodInvocation(String className) throws ClassNotFoundException{
         //TODO: Your code goes here
 
@@ -51,6 +76,12 @@ public class GraphGenerator {
         CFG mycfg = gg.createCFG("pset5.C");    //Example invocation of createCFG
 
         System.out.println(mycfg);
+        Iterator<Map.Entry<CFG.Node, Set<CFG.Node>>> itr = mycfg.edges.entrySet().iterator();
+        while(itr.hasNext()){
+            Map.Entry<CFG.Node, Set<CFG.Node>> entry = itr.next();
+            System.out.println("SourceNode: " + entry.getKey().method + ": " + entry.getKey().position + "; DestNodes: " + entry.getValue());
+        }
+
 
         //gg.createCFGWithMethodInvocation("pset5.D");    //Example invocation of createCFGWith....
     }
