@@ -38,9 +38,9 @@ public class GraphGenerator {
                     cfg.addEdge(position, brInst.getTarget().getPosition(), m, jc);
                 }
 
-                //If instruction is an exit point, create edge to exit node
-                //else create edge to next instruction
-                if(ih.getNext() == null || inst.getName() == "ireturn"){
+                //If instruction is an Return instruction, create edge to exit node
+                //  else create edge to next instruction
+                if(inst instanceof ReturnInstruction){
                     cfg.addEdge(position, exitNodePos, m, jc);
                 }
                 else{
@@ -88,9 +88,9 @@ public class GraphGenerator {
                     // Create edge from: .getMethodName, position -1, .getClassName ==> .getNext
                 }
 
-                //If instruction is an exit point, create edge to exit node
-                //else create edge to next instruction
-                if(ih.getNext() == null || inst.getName() == "ireturn"){
+                //If instruction is an Return instruction, create edge to exit node
+                //  else create edge to next instruction
+                if(inst instanceof ReturnInstruction){
                     cfg.addEdge(position, exitNodePos, m, jc);
                 }
                 else{
