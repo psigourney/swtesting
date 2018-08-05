@@ -82,10 +82,13 @@ public class GraphGenerator {
                 //If instruction is a method call:
                 if(inst instanceof InvokeInstruction) {
                     InvokeInstruction invInst = (InvokeInstruction) inst;
-                    System.out.println("    InvokeInstMethod: " + invInst.getMethodName(cpg));
-
-                    // Create edge to:  => .getMethodName(cpg), position 0, .getClassName(cpg)
-                    // Create edge from: .getMethodName, position -1, .getClassName ==> .getNext
+                    Method targetMethod = cg.containsMethod(invInst.getMethodName(cpg), invInst.getSignature(cpg));
+                    //Add "call" edge
+                    cfg.addEdge(position, m, jc, 0, targetMethod, jc);
+                    //Add "return" edge
+                    if(m != targetMethod) {
+                        cfg.addEdge(-1, targetMethod, jc, ih.getNext().getPosition(), m, jc);
+                    }
                 }
 
                 //If instruction is an Return instruction, create edge to exit node
@@ -93,7 +96,7 @@ public class GraphGenerator {
                 if(inst instanceof ReturnInstruction){
                     cfg.addEdge(position, exitNodePos, m, jc);
                 }
-                else{
+                else if(!(inst instanceof InvokeInstruction)){
                     cfg.addEdge(position, ih.getNext().getPosition(), m, jc);
                 }
             }
@@ -103,8 +106,8 @@ public class GraphGenerator {
 
     public static void main(String[] a) throws ClassNotFoundException{
         GraphGenerator gg = new GraphGenerator();
-        CFG mycfg = gg.createCFG("pset5.C");
-        //CFG mycfg = gg.createCFGWithMethodInvocation("pset5.D");
+        //CFG mycfg = gg.createCFG("pset5.D");
+        CFG mycfg = gg.createCFGWithMethodInvocation("pset5.D");
 
         System.out.println(mycfg);
         Iterator<Map.Entry<CFG.Node, Set<CFG.Node>>> itr = mycfg.edges.entrySet().iterator();
