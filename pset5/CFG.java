@@ -72,10 +72,8 @@ public class CFG {
         return nodes.size() + " nodes\n" +"nodes: " + nodes + '\n' + "edges: " + edges;
     }
 
-    //Determine whether a method is invokes another method, either directly or indirectly.
+    //Determine whether a method invokes another method, either directly or indirectly.
     public boolean isReachable(String methodFrom, String clazzFrom, String methodTo, String clazzTo) {
-        //TODO: Look through all edges where key Node matches methodFrom and clazzFrom
-        //TODO: Make a list of external methods reachable from those edges
         LinkedList<Method> visitedMethods = new LinkedList<>();
         for (Map.Entry<CFG.Node, Set<CFG.Node>> entry : edges.entrySet()) {
             //If we find the FROM method in the edges set:
