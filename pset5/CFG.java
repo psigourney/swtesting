@@ -72,8 +72,38 @@ public class CFG {
         return nodes.size() + " nodes\n" +"nodes: " + nodes + '\n' + "edges: " + edges;
     }
 
-    public boolean isReachable(String methodFrom, String clazzFrom, String methodTo, String clazzTo){
-        //TODO:  IMPLEMENT THIS in Question 2.2
-        return true; //DUMMY RETURN
+    //Determine whether a method is invokes another method, either directly or indirectly.
+    public boolean isReachable(String methodFrom, String clazzFrom, String methodTo, String clazzTo) {
+        //TODO: Look through all edges where key Node matches methodFrom and clazzFrom
+        //TODO: Make a list of external methods reachable from those edges
+        LinkedList<Method> visitedMethods = new LinkedList<>();
+        for (Map.Entry<CFG.Node, Set<CFG.Node>> entry : edges.entrySet()) {
+            //If we find the FROM method in the edges set:
+            if (entry.getKey().getMethod().getName().equals(methodFrom) && entry.getKey().getClazz().getClassName().equals(clazzFrom)) {
+                return recursiveCheck(entry.getKey().getMethod(), entry.getKey().getClazz(), methodTo, clazzTo, visitedMethods);
+            }
+        }
+        return false;
+    }
+
+    private boolean recursiveCheck(Method methodFrom, JavaClass clazzFrom, String methodTo, String clazzTo, LinkedList<Method> visitedMethods) {
+        //If from == to, return true
+        if (methodFrom.getName().equals(methodTo) && clazzFrom.getClassName().equals(clazzTo)) { return true; }
+        //Add from to visitedMethods
+        visitedMethods.add(methodFrom);
+        //For each node in startingMethod....
+        for (Map.Entry<CFG.Node, Set<CFG.Node>> entry : edges.entrySet()) {
+            if (entry.getKey().getMethod().equals(methodFrom) && entry.getKey().getClazz().equals(clazzFrom)) {
+                //....check all its destination nodes for the target method
+                for (Node destNode : entry.getValue()) {
+                    if(!(visitedMethods.contains(destNode.getMethod()))) {
+                        if (recursiveCheck(destNode.method, destNode.clazz, methodTo, clazzTo, visitedMethods)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

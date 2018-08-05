@@ -5,7 +5,6 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.*;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -58,7 +57,7 @@ public class GraphGenerator {
         ConstantPoolGen cpg = cg.getConstantPool();
 
         for(Method m : cg.getMethods()){
-            System.out.println("Method: " + m);
+            System.out.println("Class: " + cg.getClassName() + " Method: " + m.getName());
             MethodGen mg = new MethodGen(m, cg.getClassName(), cpg);
             InstructionList il = mg.getInstructionList();
             InstructionHandle[] handles = il.getInstructionHandles();
@@ -106,15 +105,19 @@ public class GraphGenerator {
 
     public static void main(String[] a) throws ClassNotFoundException{
         GraphGenerator gg = new GraphGenerator();
-        //CFG mycfg = gg.createCFG("pset5.D");
-        CFG mycfg = gg.createCFGWithMethodInvocation("pset5.D");
 
-        System.out.println(mycfg);
-        Iterator<Map.Entry<CFG.Node, Set<CFG.Node>>> itr = mycfg.edges.entrySet().iterator();
-        while(itr.hasNext()){
-            Map.Entry<CFG.Node, Set<CFG.Node>> entry = itr.next();
+        CFG mycfg1 = gg.createCFG("pset5.C");
+        System.out.println(mycfg1);
+        for (Map.Entry<CFG.Node, Set<CFG.Node>> entry : mycfg1.edges.entrySet()) {
             System.out.println("SourceNode: " + entry.getKey().method + ": " + entry.getKey().position + "; DestNodes: " + entry.getValue());
         }
 
+        CFG mycfg2 = gg.createCFGWithMethodInvocation("pset5.D");
+        System.out.println(mycfg2);
+        for (Map.Entry<CFG.Node, Set<CFG.Node>> entry : mycfg2.edges.entrySet()) {
+            System.out.println("SourceNode: " + entry.getKey().method + ": " + entry.getKey().position + "; DestNodes: " + entry.getValue());
+        }
+
+        System.out.println("Is reachable?: " + mycfg2.isReachable("foo", "pset5.D", "main", "pset5.D"));
     }
 }
