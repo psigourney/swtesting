@@ -16,7 +16,6 @@ public class GraphGenerator {
         ConstantPoolGen cpg = cg.getConstantPool();
 
         for(Method m : cg.getMethods()){
-            System.out.println("Method: " + m);
             MethodGen mg = new MethodGen(m, cg.getClassName(), cpg);
             InstructionList il = mg.getInstructionList();
             InstructionHandle[] handles = il.getInstructionHandles();
@@ -26,7 +25,6 @@ public class GraphGenerator {
             cfg.addNode(exitNodePos, m, jc);
 
             for(InstructionHandle ih : handles){
-                System.out.println("IH: " + ih + " Prev: " + ih.getPrev() + " Next: " + ih.getNext());
                 int position = ih.getPosition();
                 cfg.addNode(position, m, jc);
                 Instruction inst = ih.getInstruction();
@@ -57,7 +55,6 @@ public class GraphGenerator {
         ConstantPoolGen cpg = cg.getConstantPool();
 
         for(Method m : cg.getMethods()){
-            System.out.println("Class: " + cg.getClassName() + " Method: " + m.getName());
             MethodGen mg = new MethodGen(m, cg.getClassName(), cpg);
             InstructionList il = mg.getInstructionList();
             InstructionHandle[] handles = il.getInstructionHandles();
@@ -67,7 +64,6 @@ public class GraphGenerator {
             cfg.addNode(exitNodePos, m, jc);
 
             for(InstructionHandle ih : handles){
-                System.out.println("IH: " + ih + " Prev: " + ih.getPrev() + " Next: " + ih.getNext());
                 int position = ih.getPosition();
                 cfg.addNode(position, m, jc);
                 Instruction inst = ih.getInstruction();
@@ -82,9 +78,9 @@ public class GraphGenerator {
                 if(inst instanceof InvokeInstruction) {
                     InvokeInstruction invInst = (InvokeInstruction) inst;
                     Method targetMethod = cg.containsMethod(invInst.getMethodName(cpg), invInst.getSignature(cpg));
-                    //Add "call" edge
+                    //Add "call" edge from method call to entry node
                     cfg.addEdge(position, m, jc, 0, targetMethod, jc);
-                    //Add "return" edge
+                    //Add "return" edge from exit node to calling method
                     if(m != targetMethod) {
                         cfg.addEdge(-1, targetMethod, jc, ih.getNext().getPosition(), m, jc);
                     }
@@ -107,16 +103,18 @@ public class GraphGenerator {
         GraphGenerator gg = new GraphGenerator();
 
         CFG mycfg1 = gg.createCFG("pset5.C");
-        System.out.println(mycfg1);
         for (Map.Entry<CFG.Node, Set<CFG.Node>> entry : mycfg1.edges.entrySet()) {
             System.out.println("SourceNode: " + entry.getKey().method + ": " + entry.getKey().position + "; DestNodes: " + entry.getValue());
         }
 
+        System.out.println("==========================================================");
+
         CFG mycfg2 = gg.createCFGWithMethodInvocation("pset5.D");
-        System.out.println(mycfg2);
         for (Map.Entry<CFG.Node, Set<CFG.Node>> entry : mycfg2.edges.entrySet()) {
             System.out.println("SourceNode: " + entry.getKey().method + ": " + entry.getKey().position + "; DestNodes: " + entry.getValue());
         }
+
+        System.out.println("==========================================================");
 
         System.out.println("Is reachable?: " + mycfg2.isReachable("foo", "pset5.D", "main", "pset5.D"));
     }

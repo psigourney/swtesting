@@ -81,18 +81,17 @@ public class CFG {
                 return recursiveCheck(entry.getKey().getMethod(), entry.getKey().getClazz(), methodTo, clazzTo, visitedMethods);
             }
         }
+        //methodFrom doesn't exist in our CFG, bail out immediately
         return false;
     }
 
     private boolean recursiveCheck(Method methodFrom, JavaClass clazzFrom, String methodTo, String clazzTo, LinkedList<Method> visitedMethods) {
-        //If from == to, return true
         if (methodFrom.getName().equals(methodTo) && clazzFrom.getClassName().equals(clazzTo)) { return true; }
-        //Add from to visitedMethods
         visitedMethods.add(methodFrom);
-        //For each node in startingMethod....
+        //For each matching node in startingMethod....
         for (Map.Entry<CFG.Node, Set<CFG.Node>> entry : edges.entrySet()) {
             if (entry.getKey().getMethod().equals(methodFrom) && entry.getKey().getClazz().equals(clazzFrom)) {
-                //....check all its destination nodes for the target method
+                //....recursively check all its destination nodes for the target method
                 for (Node destNode : entry.getValue()) {
                     if(!(visitedMethods.contains(destNode.getMethod()))) {
                         if (recursiveCheck(destNode.method, destNode.clazz, methodTo, clazzTo, visitedMethods)) {
